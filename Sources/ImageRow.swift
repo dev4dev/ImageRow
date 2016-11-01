@@ -25,6 +25,53 @@
 import Eureka
 import Foundation
 
+public protocol ImagePickerCellType: class {
+	var titleLabel: UILabel! { get set }
+	var pickedImageView: UIImageView! { get set }
+}
+
+public class ImagePickerCell: Cell<UIImage>, CellType, ImagePickerCellType {
+
+	public var pickedImageView: UIImageView!
+	public var titleLabel: UILabel!
+
+	public override func setup() {
+		super.setup()
+
+		pickedImageView = UIImageView(frame: .init(x: 0, y: 0, width: 44.0, height: 44.0))
+		pickedImageView.center = contentView.center
+		pickedImageView.contentMode = .scaleAspectFill
+		pickedImageView.clipsToBounds = true
+		pickedImageView.layer.cornerRadius = 22.0
+		pickedImageView.translatesAutoresizingMaskIntoConstraints = false
+		contentView.addSubview(pickedImageView)
+		addConstraint(NSLayoutConstraint(item: pickedImageView, attribute: .leading, relatedBy: .equal, toItem: contentView, attribute: .leading, multiplier: 1.0, constant: 16.0))
+		addConstraint(NSLayoutConstraint(item: pickedImageView, attribute: .centerY, relatedBy: .equal, toItem: contentView, attribute: .centerY, multiplier: 1.0, constant: 0.0))
+		addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[image(44.0)]", options: [], metrics: nil, views: ["image": pickedImageView]))
+		addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[image(44.0)]", options: [], metrics: nil, views: ["image": pickedImageView]))
+
+
+		titleLabel = UILabel()
+		titleLabel.textColor = .red
+		titleLabel.translatesAutoresizingMaskIntoConstraints = false
+		contentView.addSubview(titleLabel)
+		addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[image]-12-[label]", options: [], metrics: nil, views: ["label" : titleLabel, "image": pickedImageView]))
+		addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[label]|", options: [], metrics: nil, views: ["label" : titleLabel]))
+	}
+
+	public override func update() {
+		super.update()
+
+		accessoryType = .disclosureIndicator
+		editingAccessoryType = accessoryType
+		selectionStyle = row.isDisabled ? .none : .default
+
+		textLabel?.text = ""
+		titleLabel.text = row.title
+		titleLabel.sizeToFit()
+	}
+}
+
 public struct ImageRowSourceTypes : OptionSet {
     
     public let rawValue: Int
@@ -65,9 +112,9 @@ public enum ImageClearAction {
 
 //MARK: Row
 
-open class _ImageRow<Cell: CellType>: SelectorRow<Cell, ImagePickerController> where Cell: BaseCell, Cell: TypedCellType, Cell.Value == UIImage {
+open class _ImageRow<Cell: CellType>: SelectorRow<Cell, ImagePickerController> where Cell: BaseCell, Cell: TypedCellType, Cell: ImagePickerCellType, Cell.Value == UIImage {
     
-
+	open var placeholder: UIImage?
     open var sourceTypes: ImageRowSourceTypes
     open internal(set) var imageURL: URL?
     open var clearAction = ImageClearAction.yes(style: .destructive)
@@ -168,19 +215,17 @@ open class _ImageRow<Cell: CellType>: SelectorRow<Cell, ImagePickerController> w
     open override func customUpdateCell() {
         super.customUpdateCell()
         cell.accessoryType = .none
-        if let image = self.value {
-            let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 44, height: 44))
-            imageView.contentMode = .scaleAspectFill
-            imageView.image = image
-            imageView.clipsToBounds = true
-            cell.accessoryView = imageView
-        }
-        else{
-            cell.accessoryView = nil
-        }
-    }
-    
 
+		if let image = self.value {
+			cell.pickedImageView.image = image
+		} else {
+			if let pl = self.placeholder {
+				cell.pickedImageView.image = pl
+			} else {
+				cell.pickedImageView.image = nil
+			}
+		}
+    }
 }
 
 extension _ImageRow {
@@ -203,7 +248,7 @@ extension _ImageRow {
 }
 
 /// A selector row where the user can pick an image
-public final class ImageRow : _ImageRow<PushSelectorCell<UIImage>>, RowType {
+public final class ImageRow : _ImageRow<ImagePickerCell>, RowType {
     public required init(tag: String?) {
         super.init(tag: tag)
     }

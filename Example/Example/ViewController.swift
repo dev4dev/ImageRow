@@ -15,11 +15,14 @@ class ViewController: FormViewController {
         
         
         form +++ Section()
-                <<< ImageRow() { row in
+                <<< ImageRow("avatar") { row in
                     row.title = "Image Row 1"
                     row.sourceTypes = [.PhotoLibrary, .SavedPhotosAlbum]
                     row.clearAction = .yes(style: UIAlertActionStyle.destructive)
-                }
+					row.placeholder = UIImage(named: "cat")
+                }.cellSetup({ cell, row in
+					cell.height = { 60.0 }
+				})
              +++
                  Section()
                 <<< ImageRow() {
@@ -39,4 +42,8 @@ class ViewController: FormViewController {
                         $0.clearAction = .yes(style: .default)
                     }
     }
+
+	@IBAction func onSave(_ sender: UIBarButtonItem) {
+		print(form.values())
+	}
 }

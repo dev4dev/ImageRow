@@ -25,6 +25,13 @@
 			remoteGlobalIDString = 28F828CB1C4B714D00330CF4;
 			remoteInfo = Example;
 		};
+		6307F9DB1DC7A00D00D5D8D1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 287D0A741C4B7B26004566D6 /* ImageRow.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 28F8287C1C494B2C00330CF4;
+			remoteInfo = ImageRow;
+		};
 		8F9CAB211D89C756006E1824 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 287D0A741C4B7B26004566D6 /* ImageRow.xcodeproj */;
@@ -164,6 +171,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				6307F9DC1DC7A00D00D5D8D1 /* PBXTargetDependency */,
 			);
 			name = Example;
 			productName = Example;
@@ -312,6 +320,11 @@
 			isa = PBXTargetDependency;
 			target = 28F828CB1C4B714D00330CF4 /* Example */;
 			targetProxy = 28F828E11C4B714D00330CF4 /* PBXContainerItemProxy */;
+		};
+		6307F9DC1DC7A00D00D5D8D1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ImageRow;
+			targetProxy = 6307F9DB1DC7A00D00D5D8D1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
